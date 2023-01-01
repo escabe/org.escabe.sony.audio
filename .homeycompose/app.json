@@ -1,0 +1,28 @@
+{
+  "id": "org.escabe.sony.audio",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Sony Audio Control"
+  },
+  "description": {
+    "en": "Adds support for devices compatible with Sony Audio Control API."
+  },
+  "category": [
+    "music"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Martijn Aben",
+    "email": "martijn.aben@gmail.com"
+  }
+}

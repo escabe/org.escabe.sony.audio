@@ -1,0 +1,98 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "org.escabe.sony.audio",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Sony Audio Control"
+  },
+  "description": {
+    "en": "Adds support for devices compatible with Sony Audio Control API."
+  },
+  "category": [
+    "music"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Martijn Aben",
+    "email": "martijn.aben@gmail.com"
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Sony Audio Device"
+      },
+      "class": "speaker",
+      "capabilities": [
+        "speaker_album",
+        "speaker_artist",
+        "speaker_duration",
+        "speaker_next",
+        "speaker_playing",
+        "speaker_prev",
+        "speaker_repeat",
+        "volume_set",
+        "speaker_shuffle",
+        "speaker_track",
+        "volume_down",
+        "volume_mute",
+        "volume_up"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/sony-audio-device/assets/images/small.png",
+        "large": "/drivers/sony-audio-device/assets/images/large.png",
+        "xlarge": "/drivers/sony-audio-device/assets/images/xlarge.png"
+      },
+      "discovery": "ssdp",
+      "pair": [
+        {
+          "id": "list_my_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_my_devices"
+          }
+        },
+        {
+          "id": "add_my_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "sony-audio-device"
+    }
+  ],
+  "discovery": {
+    "ssdp": {
+      "type": "ssdp",
+      "ssdp": {
+        "search": "urn:schemas-sony-com:service:ScalarWebAPI:1"
+      },
+      "id": "{{headers.usn}}",
+      "conditions": [
+        [
+          {
+            "field": "headers.st",
+            "match": {
+              "type": "string",
+              "value": "urn:schemas-sony-com:service:ScalarWebAPI:1"
+            }
+          }
+        ]
+      ]
+    }
+  }
+}
