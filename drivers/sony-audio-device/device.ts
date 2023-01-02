@@ -40,6 +40,13 @@ class SonyAudioDevice extends Homey.Device {
     this.registerCapabilityListener('volume_set',(value) => {
       this.client.setVolume(value);
     });    
+
+    this.registerCapabilityListener('volume_up',(value) => {
+      this.triggerCapabilityListener('volume_set',this.getCapabilityValue('volume_set')+1);
+    });    
+    this.registerCapabilityListener('volume_down',(value) => {
+      this.triggerCapabilityListener('volume_set',this.getCapabilityValue('volume_set')-1);
+    });    
   }
  
   /**
