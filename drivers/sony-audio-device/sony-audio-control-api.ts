@@ -1,12 +1,47 @@
 import axios from "axios";
+import events from "events";
 import * as websocket from 'websocket';
 
-export class SonyAudioControlApi {
+declare interface NetservicePlayingContentInfo {
+    albumName:string,
+    artist:string,
+    contentKind:string,
+    output:string,
+    source:string,
+    stateInfo: {
+     state:string
+    },
+    title:string,
+    uri:string,
+    content: {
+        thumbnailUrl:string
+    },
+    durationMsec: number
+}
+
+enum onoff {
+    On = 'on',
+    Off = 'off'
+}
+
+declare interface VolumeInformation {
+    mute: onoff,
+    output: string,
+    volume: number
+}
+
+export declare interface SonyAudioControlApi {
+    on(event: 'notifyPlayingContentInfo', listener: (info: NetservicePlayingContentInfo) => void): this;
+    on(event: 'notifyVolumeInformation', listener: (info: VolumeInformation) => void): this;
+}
+
+export class SonyAudioControlApi extends events.EventEmitter {
     private baseUri: string = '';
     private connected: boolean = false;
     private idCounter = 1;
     private services: string[] | undefined;
     private wss: any;
+    private wsc: any = {};
 
     public isConnected(): boolean {
         return this.connected;
@@ -22,8 +57,10 @@ export class SonyAudioControlApi {
         }
         this.services = await this.getAllServices();
         this.wss = this.services.reduce((out:any,service)=>{
-            return out[service] = this.connectToService(service);
+            out[service] = this.connectToService(service);
+            return out;
         },{})
+        console.log(this.wss);
         this.connected = true;
     }
 
@@ -33,8 +70,36 @@ export class SonyAudioControlApi {
         });
         this.connected = false;
         this.wss = {};
+        this.wsc = {};
     }
 
+    public setMute(mute: boolean): void {
+        const req = {
+            "method":"setAudioMute",
+            "id":2,
+            "params":[
+                {
+                "mute": mute ? 'on' : 'off'
+                }
+            ],
+            "version":"1.1"
+        }     
+        this.wsc.audio.sendUTF(JSON.stringify(req));
+    }
+    
+    public setVolume(volume: number): void {
+        const req = {
+            "method":"setAudioVolume",
+            "id":2,
+            "params":[
+                {
+                "volume": volume.toString()
+                }
+            ],
+            "version":"1.1"
+        }     
+        this.wsc.audio.sendUTF(JSON.stringify(req));
+    }    
     private connectToService(service: string): websocket.client {
         const client = new websocket.client();
         
@@ -43,6 +108,7 @@ export class SonyAudioControlApi {
         })
 
         client.on('connect',(connection) => {
+            this.wsc[service] = connection;
             console.log(service + ' connected');
             connection.on('close',()=>{
                 console.log(service + ' disconnected');
@@ -68,7 +134,7 @@ export class SonyAudioControlApi {
                     } else if (msg.id == 2) {
                         // Verify nothing disabled
                     } else {
-                        // Standard notifications
+                        this.emit(msg.method,msg.params[0]);
                     }
                 }
             });

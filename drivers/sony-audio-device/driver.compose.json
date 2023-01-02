@@ -4,6 +4,7 @@
   },
   "class": "speaker",
   "capabilities": [
+    "onoff",
     "speaker_album",
     "speaker_artist",
     "speaker_duration",
@@ -11,13 +12,65 @@
     "speaker_playing",
     "speaker_prev",
     "speaker_repeat",
-    "volume_set",
     "speaker_shuffle",
     "speaker_track",
-    "volume_down",
     "volume_mute",
-    "volume_up"
+    "onoffbutton.nightMode",
+    "volume_up",
+    "volume_down",
+    "volume_set",
+    "volume_up.subwooferLevel",
+    "volume_down.subwooferLevel",
+    "volume_set.subwooferLevel",
+    "volume_up.rearspeakerLevel",
+    "volume_down.rearspeakerLevel",
+    "volume_set.rearspeakerLevel",
+    "input_source",
+    "sound_mode.soundField",
+    "onoffbutton.soundEnhancer",
+    "avsync.avSyncMs",
+    "onoffbutton.voice"
   ],
+  "capabilitiesOptions": {
+    "volume_set": {
+      "max": 100,
+      "min": 0,
+      "step": 1
+    },
+    "volume_set.subwooferLevel": {
+      "title": {"en":"Subwoofer Volume"},
+      "max": 12,
+      "min": 0,
+      "step": 1
+    },
+    "volume_up.subwooferLevel": {
+      "title": {"en":"Subwoofer Volume Up"}
+    },
+    "volume_down.subwooferLevel": {
+      "title": {"en":"Subwoofer Volume Down"}
+    },
+    "volume_set.rearspeakerLevel": {
+      "title": {"en":"Rear speakers Volume"},
+      "max": 12,
+      "min": 0,
+      "step": 1
+    },
+    "volume_up.rearspeakerLevel": {
+      "title": {"en":"Rear speakers Volume Up"}
+    },
+    "volume_down.rearspeakerLevel": {
+      "title": {"en":"Rear speakers Volume Down"}
+    },    
+    "onoffbutton.soundEnhancer": {
+      "title": {"en":"Immersive Audio Enhancement"}
+    },
+    "onoffbutton.nightMode": {
+      "title": {"en":"Night"}
+    },
+    "onoffbutton.voice": {
+      "title": {"en":"Voice"}
+    }
+  },
   "platforms": [
     "local"
   ],

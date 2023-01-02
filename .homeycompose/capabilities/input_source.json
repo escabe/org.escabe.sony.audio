@@ -1,0 +1,17 @@
+{
+    "type": "enum",
+    "title": { "en": "Input Source" },
+    "uiComponent": "picker",
+    "getable": true,
+    "setable": true,
+    "values": [
+        { "id": "extInput:tv", "title": { "en": "TV" }},
+        { "id": "extInput:hdmi?port=1", "title": { "en": "HDMI1" }},
+        { "id": "extInput:hdmi?port=2", "title": { "en": "HDMI2" }},
+        { "id": "extInput:btAudio", "title": { "en": "Bluetooth Audio" }},
+        { "id": "extInput:line", "title": { "en": "Analog" }},
+        { "id": "netService:audio", "title": { "en": "Streaming Service" }},
+        { "id": "cast:audio", "title": { "en": "Cast" }},
+        { "id": "extInput:airPlay", "title": { "en": "Airplay" }}
+    ]
+  }

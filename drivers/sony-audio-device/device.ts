@@ -13,6 +13,33 @@ class SonyAudioDevice extends Homey.Device {
 
   async onInit() {
     this.log('SonyAudioDevice has been initialized');
+
+    this.client.on('notifyPlayingContentInfo',(info) => {
+      this.setCapabilityValue('speaker_album',info.albumName);
+      this.setCapabilityValue('speaker_track',info.title);
+      this.setCapabilityValue('speaker_artist',info.artist);
+      this.setCapabilityValue('speaker_duration',info.durationMsec);
+      this.log(info.stateInfo.state);
+      if (info.content && info.content.thumbnailUrl) {
+        this.homey.images.createImage().then((im) => {
+          im.setUrl(info.content.thumbnailUrl);
+          this.setAlbumArtImage(im);
+        });
+      }
+    });
+
+    this.client.on('notifyVolumeInformation',(info)=> {
+      this.setCapabilityValue('volume_mute', info.mute == 'on');
+      this.setCapabilityValue('volume_set',info.volume);
+    });
+
+    this.registerCapabilityListener('volume_mute',(value) => {
+      this.client.setMute(value);
+    });
+
+    this.registerCapabilityListener('volume_set',(value) => {
+      this.client.setVolume(value);
+    });    
   }
  
   /**

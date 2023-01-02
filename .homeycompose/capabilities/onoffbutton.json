@@ -1,0 +1,7 @@
+{
+    "type": "boolean",
+    "title": { "en": "ONOFF" },
+    "uiComponent": "button",
+    "getable": true,
+    "setable": true
+  }

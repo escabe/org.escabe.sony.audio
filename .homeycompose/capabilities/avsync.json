@@ -1,0 +1,11 @@
+{
+    "type": "number",
+    "title": { "en": "A/V SYNC" },
+    "units": {"en": "ms"},
+    "min": 0,
+    "max": 300,
+    "step": 25,
+    "uiComponent": "slider",
+    "getable": true,
+    "setable": true
+  }

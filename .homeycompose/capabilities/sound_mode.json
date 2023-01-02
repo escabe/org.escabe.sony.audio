@@ -1,0 +1,13 @@
+{
+    "type": "enum",
+    "title": { "en": "Sound Mode" },
+    "uiComponent": "picker",
+    "getable": true,
+    "setable": true,
+    "values": [
+        { "id": "auto", "title": { "en": "Auto Sound" }},
+        { "id": "cinemaStudio", "title": { "en": "Cinema" }},
+        { "id": "music", "title": { "en": "Music" }},
+        { "id": "standard", "title": { "en": "Standard Surround" }}
+    ]
+  }
