@@ -108,6 +108,21 @@ export class SonyAudioControlApi extends events.EventEmitter {
         }     
         this.wsc.audio.sendUTF(JSON.stringify(req));
     }    
+
+    public setPowerStatus(status: string): void {
+        const req = {
+            "method":"setPowerStatus",
+            "id":2,
+            "params":[
+                {
+                "status": status
+                }
+            ],
+            "version":"1.1"
+        }     
+        this.wsc.system.sendUTF(JSON.stringify(req));        
+    }
+
     private connectToService(service: string): websocket.client {
         const client = new websocket.client();
         

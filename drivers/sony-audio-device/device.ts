@@ -24,10 +24,12 @@ class SonyAudioDevice extends Homey.Device {
     this.client.on('notifyPlayingContentInfo',(info) => {
       if (info.kind === 'input') {
         this.setCapabilityValue('speaker_album','INPUT');
-        this.setCapabilityValue('speaker_track',info.source ?? 'UNKNOWN');
+        this.setCapabilityValue('speaker_track',this.sourceMap[info.source] ?? 'UNKNOWN');
         this.setCapabilityValue('speaker_artist','INPUT');
         this.setCapabilityValue('speaker_duration',0);        
         this.setCapabilityValue('speaker_playing',true);
+        this.albumArt?.setPath('/assets/hdmi.png');
+        this.albumArt?.update();
       } else {
         this.setCapabilityValue('speaker_album',info.albumName ?? '');
         this.setCapabilityValue('speaker_track',info.title ?? '');
@@ -44,6 +46,11 @@ class SonyAudioDevice extends Homey.Device {
     this.client.on('notifyVolumeInformation',(info)=> {
       this.setCapabilityValue('volume_mute', info.mute == 'on');
       this.setCapabilityValue('volume_set',info.volume);
+    });
+
+
+    this.registerCapabilityListener('onoff',(value) => {
+      this.client.setPowerStatus(value ? 'active' : 'standby');
     });
 
     this.registerCapabilityListener('volume_mute',(value) => {
@@ -133,6 +140,17 @@ class SonyAudioDevice extends Homey.Device {
     // // When the device is offline, try to reconnect here
     // this.api.reconnect().catch(this.error); 
     this.client.connect();
+  }
+
+  sourceMap: any = {
+    "extInput:tv": "TV" ,
+    "extInput:hdmi?port=1": "HDMI1",
+    "extInput:hdmi?port=2": "HDMI2",
+    "extInput:btAudio": "Bluetooth Audio",
+    "extInput:line" : "Analog",
+    "netService:audio" : "Streaming Service",
+    "cast:audio": "Cast",
+    "extInput:airPlay" : "Airplay" 
   }
 
 
