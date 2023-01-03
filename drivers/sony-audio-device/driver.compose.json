@@ -29,7 +29,8 @@
     "sound_mode.soundField",
     "onoffbutton.soundEnhancer",
     "avsync.avSyncMs",
-    "onoffbutton.voice"
+    "onoffbutton.voice",
+    "button.radio"
   ],
   "capabilitiesOptions": {
     "volume_set": {

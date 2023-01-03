@@ -30,6 +30,8 @@ class SonyAudioDevice extends Homey.Device {
         this.setCapabilityValue('speaker_playing',true);
         this.albumArt?.setPath('/assets/hdmi.png');
         this.albumArt?.update();
+
+        this.setCapabilityValue('input_source',info.source);
       } else {
         this.setCapabilityValue('speaker_album',info.albumName ?? '');
         this.setCapabilityValue('speaker_track',info.title ?? '');
@@ -48,6 +50,32 @@ class SonyAudioDevice extends Homey.Device {
       this.setCapabilityValue('volume_set',info.volume);
     });
 
+    this.client.on('notifySettingsUpdate',(info) => {
+      console.log(info.apiMappingUpdate);
+      switch (info.apiMappingUpdate.target) {
+        case 'rearspeakerLevel':
+          this.setCapabilityValue('volume_set.rearspeakerLevel',Number.parseInt(info.apiMappingUpdate.currentValue));
+          break;
+        case 'subwooferLevel':
+          this.setCapabilityValue('volume_set.subwooferLevel',Number.parseInt(info.apiMappingUpdate.currentValue));
+          break;
+        case 'voice':
+          this.setCapabilityValue('onoffbutton.voice',info.apiMappingUpdate.currentValue==='on');
+          break;
+        case 'enhancer':
+          this.setCapabilityValue('onoffbutton.soundEnhancer',info.apiMappingUpdate.currentValue==='on');
+          break;
+        case 'nightMode':
+          this.setCapabilityValue('onoffbutton.nightMode',info.apiMappingUpdate.currentValue==='on');
+          break;
+        case 'soundField':
+          this.setCapabilityValue('sound_mode.soundField',info.apiMappingUpdate.currentValue);
+          break;    
+        case 'avSyncMs':
+          this.setCapabilityValue('avsync.avSyncMs',Number.parseInt(info.apiMappingUpdate.currentValue));
+          break;         
+      }
+    });
 
     this.registerCapabilityListener('onoff',(value) => {
       this.client.setPowerStatus(value ? 'active' : 'standby');
@@ -66,6 +94,10 @@ class SonyAudioDevice extends Homey.Device {
     });    
     this.registerCapabilityListener('volume_down',(value) => {
       this.triggerCapabilityListener('volume_set',this.getCapabilityValue('volume_set')-1);
+    });
+
+    this.registerCapabilityListener('button.radio',() => {
+      
     });
   }
  

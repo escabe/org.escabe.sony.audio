@@ -37,10 +37,25 @@ declare interface PowerStatus {
     status: string
 }
 
+declare interface SettingsUpdate {
+    apiMappingUpdate: {
+        currentValue: string,
+        getApi: any,
+        service: string,
+        setApi: any,
+        target: string
+    },
+    isAvailable: boolean,
+    title: string,
+    titleTextID: string,
+    type: string
+}
+
 export declare interface SonyAudioControlApi {
     on(event: 'notifyPlayingContentInfo', listener: (info: PlayingContentInfo) => void): this;
     on(event: 'notifyVolumeInformation', listener: (info: VolumeInformation) => void): this;
     on(event: 'notifyPowerStatus', listener: (status: PowerStatus) => void): this;
+    on(event: 'notifySettingsUpdate', listener: (info: SettingsUpdate) => void): this;
 }
 
 export class SonyAudioControlApi extends events.EventEmitter {
