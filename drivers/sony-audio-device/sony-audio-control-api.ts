@@ -2,7 +2,8 @@ import axios from "axios";
 import events from "events";
 import * as websocket from 'websocket';
 
-declare interface NetservicePlayingContentInfo {
+declare interface PlayingContentInfo {
+    kind: string,
     albumName:string,
     artist:string,
     contentKind:string,
@@ -16,7 +17,8 @@ declare interface NetservicePlayingContentInfo {
     content: {
         thumbnailUrl:string
     },
-    durationMsec: number
+    durationMsec: number,
+    service: string
 }
 
 enum onoff {
@@ -30,9 +32,15 @@ declare interface VolumeInformation {
     volume: number
 }
 
+declare interface PowerStatus {
+    standbyDetail: string,
+    status: string
+}
+
 export declare interface SonyAudioControlApi {
-    on(event: 'notifyPlayingContentInfo', listener: (info: NetservicePlayingContentInfo) => void): this;
+    on(event: 'notifyPlayingContentInfo', listener: (info: PlayingContentInfo) => void): this;
     on(event: 'notifyVolumeInformation', listener: (info: VolumeInformation) => void): this;
+    on(event: 'notifyPowerStatus', listener: (status: PowerStatus) => void): this;
 }
 
 export class SonyAudioControlApi extends events.EventEmitter {

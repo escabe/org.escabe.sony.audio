@@ -10,21 +10,34 @@ class SonyAudioDevice extends Homey.Device {
    */
   client = new SonyAudioControlApi();
   connected = false;
-
+  albumArt: Homey.Image | undefined;
   async onInit() {
     this.log('SonyAudioDevice has been initialized');
+    
+    this.albumArt = await this.homey.images.createImage();
+    this.setAlbumArtImage(this.albumArt);
+
+    this.client.on('notifyPowerStatus',(status) => {
+      this.setCapabilityValue('onoff',status.status === 'active');
+    })
 
     this.client.on('notifyPlayingContentInfo',(info) => {
-      this.setCapabilityValue('speaker_album',info.albumName);
-      this.setCapabilityValue('speaker_track',info.title);
-      this.setCapabilityValue('speaker_artist',info.artist);
-      this.setCapabilityValue('speaker_duration',info.durationMsec);
-      this.log(info.stateInfo.state);
+      if (info.kind === 'input') {
+        this.setCapabilityValue('speaker_album','INPUT');
+        this.setCapabilityValue('speaker_track',info.source ?? 'UNKNOWN');
+        this.setCapabilityValue('speaker_artist','INPUT');
+        this.setCapabilityValue('speaker_duration',0);        
+        this.setCapabilityValue('speaker_playing',true);
+      } else {
+        this.setCapabilityValue('speaker_album',info.albumName ?? '');
+        this.setCapabilityValue('speaker_track',info.title ?? '');
+        this.setCapabilityValue('speaker_artist',info.artist ?? '');
+        this.setCapabilityValue('speaker_duration',info.durationMsec ?? 0);        
+        this.setCapabilityValue('speaker_playing',info.stateInfo?.state === 'PLAYING' ?? false);
+      }
       if (info.content && info.content.thumbnailUrl) {
-        this.homey.images.createImage().then((im) => {
-          im.setUrl(info.content.thumbnailUrl);
-          this.setAlbumArtImage(im);
-        });
+          this.albumArt?.setUrl(info.content.thumbnailUrl);
+          this.albumArt?.update();
       }
     });
 
@@ -46,7 +59,7 @@ class SonyAudioDevice extends Homey.Device {
     });    
     this.registerCapabilityListener('volume_down',(value) => {
       this.triggerCapabilityListener('volume_set',this.getCapabilityValue('volume_set')-1);
-    });    
+    });
   }
  
   /**
