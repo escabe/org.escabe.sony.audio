@@ -189,6 +189,46 @@ export class SonyAudioControlApi extends events.EventEmitter {
         this.wsc.system.sendUTF(JSON.stringify(req));        
     }
 
+    public playNext() {
+        const req = {
+            "method":"setPlayNextContent",
+            "id":2,
+            "params":[{}],
+            "version":"1.0"
+        };
+        this.wsc.avContent.sendUTF(JSON.stringify(req));
+    }
+
+    public playPrevious() {
+        const req = {
+            "method":"setPlayPreviousContent",
+            "id":2,
+            "params":[{}],
+            "version":"1.0"
+        };
+        this.wsc.avContent.sendUTF(JSON.stringify(req));        
+    }
+
+    public stopPlay() {
+        const req = {
+            "method":"stopPlayingContent",
+            "id":2,
+            "params":[{}],
+            "version":"1.1"
+        };
+        this.wsc.avContent.sendUTF(JSON.stringify(req));        
+    }
+
+    public pausePlay() {
+        const req = {
+            "method":"pausePlayingContent",
+            "id":2,
+            "params":[{}],
+            "version":"1.1"
+        };
+        this.wsc.avContent.sendUTF(JSON.stringify(req));            
+    }
+        
     private connectToService(service: string): websocket.client {
         const client = new websocket.client();
         

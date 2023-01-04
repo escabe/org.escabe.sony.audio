@@ -96,6 +96,19 @@ class SonyAudioDevice extends Homey.Device {
       this.triggerCapabilityListener('volume_set',this.getCapabilityValue('volume_set')-1);
     });
 
+    this.registerCapabilityListener('speaker_next',()=>{
+      this.client.playNext();
+    });
+
+    this.registerCapabilityListener('speaker_prev',()=>{
+      this.client.playPrevious();
+    });
+
+    this.registerCapabilityListener('speaker_playing',()=>{
+      this.client.pausePlay();
+    });
+
+
     this.registerCapabilityListener('button.radio',() => {
       
     });
