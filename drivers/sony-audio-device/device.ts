@@ -72,7 +72,7 @@ class SonyAudioDevice extends Homey.Device {
           this.setCapabilityValue('sound_mode.soundField',info.apiMappingUpdate.currentValue);
           break;    
         case 'avSyncMs':
-          this.setCapabilityValue('avsync.avSyncMs',Number.parseInt(info.apiMappingUpdate.currentValue));
+          this.setCapabilityValue('avsync.avSyncMs',info.apiMappingUpdate.currentValue === '' ? 0 : Number.parseInt(info.apiMappingUpdate.currentValue));
           break;         
       }
     });

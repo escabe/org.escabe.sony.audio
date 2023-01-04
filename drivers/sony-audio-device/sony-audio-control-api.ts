@@ -83,8 +83,59 @@ export class SonyAudioControlApi extends events.EventEmitter {
             out[service] = this.connectToService(service);
             return out;
         },{})
-        console.log(this.wss);
         this.connected = true;
+    }
+
+    private getInitialValues(connection: websocket.connection, service: string) {
+
+        switch (service) {
+            case 'audio':
+                let req = {
+                    "method":"getVolumeInformation",
+                    "id":3,
+                    "params":[
+                        {
+                        }
+                    ],
+                    "version":"1.1"
+                };
+                connection.sendUTF(JSON.stringify(req));
+                
+                req = {
+                    "method":"getSoundSettings",
+                    "id":4,
+                    "params":[
+                        {
+                        }
+                    ],
+                    "version":"1.1"
+                };
+                connection.sendUTF(JSON.stringify(req));                
+                
+                break;
+        }
+       
+    }
+
+    private emitInitialSoundSettingEvents(msg: any) {
+        console.log(msg.result);
+        msg.result[0].forEach((setting:any) => {
+          this.emit('notifySettingsUpdate',{
+                apiMappingUpdate: {
+                    currentValue: setting.currentValue,
+                    service: 'audio',
+                    target: setting.target
+                },
+                isAvailable: setting.isAvailable,
+                title: setting.title,
+                titleTextID: setting.titleTextID,
+                type: setting.type
+            });  
+        });
+    }
+
+    private emitInitialVolumeEvent(msg: any) {
+        this.emit('notifyVolumeInformation',msg.result[0][0]);
     }
 
     public disconnect() {
@@ -147,6 +198,7 @@ export class SonyAudioControlApi extends events.EventEmitter {
 
         client.on('connect',(connection) => {
             this.wsc[service] = connection;
+            this.getInitialValues(connection,service);
             console.log(service + ' connected');
             connection.on('close',()=>{
                 console.log(service + ' disconnected');
@@ -171,6 +223,12 @@ export class SonyAudioControlApi extends events.EventEmitter {
                         connection.sendUTF(JSON.stringify(req));
                     } else if (msg.id == 2) {
                         // Verify nothing disabled
+                    } else if (msg.id == 3) {
+                        // Convert info into events
+                        this.emitInitialVolumeEvent(msg);       
+                    } else if (msg.id == 4) {
+                        // Convert info into events
+                        this.emitInitialSoundSettingEvents(msg);                
                     } else {
                         this.emit(msg.method,msg.params[0]);
                     }
