@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AnyMxRecord } from "dns";
 import events from "events";
 import * as websocket from 'websocket';
 
@@ -87,16 +88,13 @@ export class SonyAudioControlApi extends events.EventEmitter {
     }
 
     private getInitialValues(connection: websocket.connection, service: string) {
-
+        let req: any;
         switch (service) {
             case 'audio':
-                let req = {
+                req = {
                     "method":"getVolumeInformation",
                     "id":3,
-                    "params":[
-                        {
-                        }
-                    ],
+                    "params":[{}],
                     "version":"1.1"
                 };
                 connection.sendUTF(JSON.stringify(req));
@@ -104,21 +102,30 @@ export class SonyAudioControlApi extends events.EventEmitter {
                 req = {
                     "method":"getSoundSettings",
                     "id":4,
-                    "params":[
-                        {
-                        }
-                    ],
+                    "params":[{}],
                     "version":"1.1"
                 };
                 connection.sendUTF(JSON.stringify(req));                
                 
                 break;
+            case 'system':
+                req = {
+                    "method":"getPowerStatus",
+                    "id":5,
+                    "params":[],
+                    "version":"1.1"
+                };
+                connection.sendUTF(JSON.stringify(req));
+                break;
         }
        
     }
 
+    private emitInitialPowerStatus(msg: any) {
+        this.emit('notifyPowerStatus',msg.result[0]);
+    }
+
     private emitInitialSoundSettingEvents(msg: any) {
-        console.log(msg.result);
         msg.result[0].forEach((setting:any) => {
           this.emit('notifySettingsUpdate',{
                 apiMappingUpdate: {
@@ -137,6 +144,22 @@ export class SonyAudioControlApi extends events.EventEmitter {
     private emitInitialVolumeEvent(msg: any) {
         this.emit('notifyVolumeInformation',msg.result[0][0]);
     }
+
+
+    private enableAllNofications(connection: websocket.connection, msg: any) {
+        // Enable all notifications
+        const req = {
+            "method": "switchNotifications",
+            "id": 2,
+            "params": [
+                {
+                    enabled: msg.result[0].disabled.concat(msg.result[0].enabled)
+                }
+            ],
+            "version": "1.0"
+        };
+        connection.sendUTF(JSON.stringify(req));
+    }    
 
     public disconnect() {
         Object.values(this.wss).forEach((ws: any)=>{
@@ -228,6 +251,7 @@ export class SonyAudioControlApi extends events.EventEmitter {
         };
         this.wsc.avContent.sendUTF(JSON.stringify(req));            
     }
+
         
     private connectToService(service: string): websocket.client {
         const client = new websocket.client();
@@ -248,29 +272,27 @@ export class SonyAudioControlApi extends events.EventEmitter {
                 if (message.type === 'utf8') {
                     const msg = JSON.parse(message.utf8Data);
                     console.log(msg);
-                    if (msg.id == 1) {
-                        // Enable all notifications
-                        const req = {
-                            "method": "switchNotifications",
-                            "id": 2,
-                            "params": [
-                                {
-                                    enabled: msg.result[0].disabled.concat(msg.result[0].enabled)
-                                }
-                            ],
-                            "version": "1.0"
-                        };
-                        connection.sendUTF(JSON.stringify(req));
-                    } else if (msg.id == 2) {
-                        // Verify nothing disabled
-                    } else if (msg.id == 3) {
-                        // Convert info into events
-                        this.emitInitialVolumeEvent(msg);       
-                    } else if (msg.id == 4) {
-                        // Convert info into events
-                        this.emitInitialSoundSettingEvents(msg);                
-                    } else {
-                        this.emit(msg.method,msg.params[0]);
+                    switch (msg.id) {
+                        case 1:
+                            this.enableAllNofications(connection,msg);
+                            break;
+                        case 2:
+                            // Verify nothing disabled
+                            break;
+                        case 3:
+                            // Convert info into events
+                            this.emitInitialVolumeEvent(msg);       
+                            break;
+                        case 4:
+                            // Convert info into events
+                            this.emitInitialSoundSettingEvents(msg);                
+                            break;
+                        case 5:
+                            this.emitInitialPowerStatus(msg);
+                            break;
+                        default:
+                            this.emit(msg.method,msg.params[0]);
+                            break;
                     }
                 }
             });

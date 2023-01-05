@@ -51,7 +51,6 @@ class SonyAudioDevice extends Homey.Device {
     });
 
     this.client.on('notifySettingsUpdate',(info) => {
-      console.log(info.apiMappingUpdate);
       switch (info.apiMappingUpdate.target) {
         case 'rearspeakerLevel':
           this.setCapabilityValue('volume_set.rearspeakerLevel',Number.parseInt(info.apiMappingUpdate.currentValue));
