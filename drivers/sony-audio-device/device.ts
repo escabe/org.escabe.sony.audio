@@ -30,14 +30,15 @@ class SonyAudioDevice extends Homey.Device {
         this.setCapabilityValue('speaker_playing',true);
         this.albumArt?.setPath('/assets/hdmi.png');
         this.albumArt?.update();
-
-        this.setCapabilityValue('input_source',info.source);
       } else {
         this.setCapabilityValue('speaker_album',info.albumName ?? '');
         this.setCapabilityValue('speaker_track',info.title ?? '');
         this.setCapabilityValue('speaker_artist',info.artist ?? '');
         this.setCapabilityValue('speaker_duration',info.durationMsec ?? 0);        
         this.setCapabilityValue('speaker_playing',info.stateInfo?.state === 'PLAYING' ?? false);
+      }
+      if (info.source) {
+        this.setCapabilityValue('input_source',info.source);
       }
       if (info.content && info.content.thumbnailUrl) {
           this.albumArt?.setUrl(info.content.thumbnailUrl);

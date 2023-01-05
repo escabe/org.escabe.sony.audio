@@ -117,6 +117,15 @@ export class SonyAudioControlApi extends events.EventEmitter {
                 };
                 connection.sendUTF(JSON.stringify(req));
                 break;
+            case 'avContent':
+                req = {
+                    "method":"getPlayingContentInfo",
+                    "id":6,
+                    "params":[{}],
+                    "version":"1.2"
+                };
+                connection.sendUTF(JSON.stringify(req));                
+                break;
         }
        
     }
@@ -124,6 +133,11 @@ export class SonyAudioControlApi extends events.EventEmitter {
     private emitInitialPowerStatus(msg: any) {
         this.emit('notifyPowerStatus',msg.result[0]);
     }
+
+    private emitInitialPlayingContentInfo(msg: any) {
+        console.log(msg.result);
+        this.emit('notifyPlayingContentInfo',msg.result[0][0]);
+    }    
 
     private emitInitialSoundSettingEvents(msg: any) {
         msg.result[0].forEach((setting:any) => {
@@ -289,6 +303,9 @@ export class SonyAudioControlApi extends events.EventEmitter {
                             break;
                         case 5:
                             this.emitInitialPowerStatus(msg);
+                            break;
+                        case 6:
+                            this.emitInitialPlayingContentInfo(msg);
                             break;
                         default:
                             this.emit(msg.method,msg.params[0]);
