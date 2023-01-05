@@ -70,7 +70,10 @@
     },
     "onoffbutton.voice": {
       "title": {"en":"Voice"}
-    }
+    },
+    "button.radio": {
+      "title": {"en":"Radio 3FM"}
+    }    
   },
   "platforms": [
     "local"

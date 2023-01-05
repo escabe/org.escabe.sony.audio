@@ -38,7 +38,11 @@ class SonyAudioDevice extends Homey.Device {
         this.setCapabilityValue('speaker_playing',info.stateInfo?.state === 'PLAYING' ?? false);
       }
       if (info.source) {
-        this.setCapabilityValue('input_source',info.source);
+        if (info.source.startsWith('netService:audio')) {
+          this.setCapabilityValue('input_source','netService:audio');
+        } else {
+          this.setCapabilityValue('input_source',info.source);
+        }
       }
       if (info.content && info.content.thumbnailUrl) {
           this.albumArt?.setUrl(info.content.thumbnailUrl);
@@ -110,7 +114,30 @@ class SonyAudioDevice extends Homey.Device {
 
 
     this.registerCapabilityListener('button.radio',() => {
-      
+      var Client = require('castv2-client').Client;
+      var DefaultMediaReceiver = require('castv2-client').DefaultMediaReceiver;
+      var client = new Client();
+      let u = new URL(this.getStore().baseUrl);
+      client.connect(u.hostname,()=>{
+        client.launch(DefaultMediaReceiver,(err:any,player:any) => {
+          player.load({
+            contentId: 'https://icecast.omroep.nl/3fm-bb-mp3',
+            contentType: 'audio/mp3',
+            streamType: 'LIVE',
+            metadata: {
+              type: 0,
+              metadataType: 0,
+              title: 'Radio 3FM',
+              images: [{
+                url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/NPO_3FM_logo_2020.svg/640px-NPO_3FM_logo_2020.svg.png'
+              }]
+            }
+          },{ autoplay: true },(err:any,status:any) => {
+            console.log(err);
+            console.log(status);
+          });
+        });
+      });
     });
   }
  
