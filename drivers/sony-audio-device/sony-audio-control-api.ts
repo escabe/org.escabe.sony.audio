@@ -176,10 +176,16 @@ export class SonyAudioControlApi extends events.EventEmitter {
     }    
 
     public disconnect() {
+        // Close everything
         Object.values(this.wss).forEach((ws: any)=>{
-            ws.disconnect();
+            try {
+                ws.disconnect();
+            } catch {
+
+            }
         });
         this.connected = false;
+        // Clear all references to anything
         this.wss = {};
         this.wsc = {};
     }
@@ -280,7 +286,7 @@ export class SonyAudioControlApi extends events.EventEmitter {
             console.log(service + ' connected');
             connection.on('close',()=>{
                 console.log(service + ' disconnected');
-                this.connected = false;
+                this.disconnect();
             });
             connection.on('message',(message)=>{
                 if (message.type === 'utf8') {
